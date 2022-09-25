@@ -25,10 +25,15 @@ export default function App() {
 
   useEffect(() => {
     loadToDos();
+    AsyncStorage.getItem("TAB", (error, result) => {
+      const savedTab = JSON.parse(result);
+      setTabIndex(savedTab.tabIndex);
+    });
   }, []);
 
   const onPressTab = useCallback((index) => {
     setTabIndex(index);
+    AsyncStorage.setItem("TAB", JSON.stringify({ tabIndex: index }));
   }, []);
 
   const onChangeText = (payload) => setText(payload);
