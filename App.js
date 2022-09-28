@@ -9,6 +9,7 @@ import {
   TextInput,
   ScrollView,
   Alert,
+  Platform,
 } from "react-native";
 import { theme } from "./colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -46,7 +47,9 @@ export default function App() {
   const loadToDos = async () => {
     try {
       const s = await AsyncStorage.getItem(STORAGE_KEY);
-      setToDos(JSON.parse(s));
+      if (s) {
+        setToDos(JSON.parse(s));
+      }
     } catch (error) {
       console.log(error);
     }
@@ -78,25 +81,35 @@ export default function App() {
 
   const deleteToDo = useCallback(
     (key) => {
-      try {
-        Alert.alert("Delete To Do", "Are you sure?", [
-          {
-            text: "Cancel",
-          },
-          {
-            text: "I'm Sure",
-            style: "destructive",
-            onPress: async () => {
-              const newToDos = { ...toDos };
-              delete newToDos[key];
-              setToDos(newToDos);
-              await saveToDos(newToDos);
+      if (Platform.OS === "web") {
+        const ok = confirm("Do you want to delete this To Do?");
+        if (ok) {
+          const newToDos = { ...toDos };
+          delete newToDos[key];
+          setToDos(newToDos);
+          saveToDos(newToDos);
+        }
+      } else {
+        try {
+          Alert.alert("Delete To Do", "Are you sure?", [
+            {
+              text: "Cancel",
             },
-          },
-        ]);
-        return;
-      } catch (error) {
-        console.log(error);
+            {
+              text: "I'm Sure",
+              style: "destructive",
+              onPress: async () => {
+                const newToDos = { ...toDos };
+                delete newToDos[key];
+                setToDos(newToDos);
+                await saveToDos(newToDos);
+              },
+            },
+          ]);
+          return;
+        } catch (error) {
+          console.log(error);
+        }
       }
     },
     [toDos]
@@ -163,10 +176,6 @@ export default function App() {
     },
     [toDos]
   );
-
-  //탭 어디서 시작하는지 기억하기
-  //완료 기능, 체크박스 + 취소선
-  //수정 기능
 
   return (
     <View style={styles.container}>
