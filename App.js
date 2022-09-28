@@ -129,7 +129,6 @@ export default function App() {
 
   const completeToDo = useCallback(
     (key) => {
-      console.log(toDos);
       if (toDos[key].status === 0) {
         try {
           Alert.alert("Complete To Do", "Are you sure?", [
@@ -180,7 +179,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      <SafeAreaView>
+      <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => onPressTab(0)}>
             <Text
@@ -203,17 +202,17 @@ export default function App() {
             </Text>
           </TouchableOpacity>
         </View>
-        <View>
-          <TextInput
-            onSubmitEditing={addToDo}
-            onChangeText={onChangeText}
-            value={text}
-            placeholder={
-              tabIndex === 0 ? "Add a To Do" : "Where do you want to go?"
-            }
-            style={styles.input}
-          />
-          <ScrollView>
+        <View style={{ flex: 1 }}>
+          <ScrollView style={{ flex: 1 }}>
+            <TextInput
+              onSubmitEditing={addToDo}
+              onChangeText={onChangeText}
+              value={text}
+              placeholder={
+                tabIndex === 0 ? "Add a To Do" : "Where do you want to go?"
+              }
+              style={styles.input}
+            />
             {Object.keys(toDos).map((key) =>
               toDos[key].tabIndex === tabIndex ? (
                 <View style={styles.toDo} key={key}>
